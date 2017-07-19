@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using opisense_sample_dotnet_console.Model;
 
 namespace opisense_sample_dotnet_console
 {
@@ -14,10 +16,12 @@ namespace opisense_sample_dotnet_console
             var reporter = new Reporter(variableSelector, authenticator);
             var siteDeletor = new SiteDeletor(siteSelector, authenticator);
             var sourceDeletor = new SourceDeletor(sourceSelector, authenticator);
+            var importer = new Importer(authenticator);
+            var exitCode = 99;
             int userInput;
             do
             {
-                userInput = DisplayMenu();
+                userInput = DisplayMenu(exitCode);
                 try
                 {
                     switch (userInput)
@@ -40,6 +44,12 @@ namespace opisense_sample_dotnet_console
                         case 6:
                             sourceDeletor.DeleteSource().Wait();
                             break;
+                        case 7:
+                            importer.ImportDefinitions().Wait();
+                            break;
+                        case 8:
+                            sourceSelector.SearchSources().Wait();
+                            break;
                     }
                 }
                 catch (Exception exc)
@@ -49,10 +59,10 @@ namespace opisense_sample_dotnet_console
                     Console.WriteLine("Something bad happened. Please try again...");
                 }
 
-            } while (userInput != 7);
+            } while (userInput != exitCode);
         }
 
-        private static int DisplayMenu()
+        private static int DisplayMenu(int exitCode)
         {
             Console.WriteLine();
             Console.WriteLine();
@@ -65,12 +75,16 @@ namespace opisense_sample_dotnet_console
             Console.WriteLine("4. View Data");
             Console.WriteLine("5. Delete a site (WARNING: UNRECOVERABLE)");
             Console.WriteLine("6. Delete a source (WARNING: UNRECOVERABLE)");
+            Console.WriteLine("7. Import sites and sources (using JSON File)");
+            Console.WriteLine("8. Search sources (using Custom filter)");
 
             Console.WriteLine();
             Console.WriteLine("-------------------------");
-            Console.WriteLine("7. Exit");
+            Console.WriteLine($"{exitCode}. Exit");
             var result = Console.ReadLine();
             return Convert.ToInt32(result);
         }
     }
+
+  
 }
